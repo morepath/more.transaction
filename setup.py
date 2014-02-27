@@ -14,6 +14,7 @@ setup(name='more.transaction',
       install_requires=[
         'setuptools',
         'morepath',
+        'transaction',
         ],
       extras_require = dict(
         test=['pytest >= 2.0',
