@@ -3,6 +3,7 @@ from more.transaction.main import (transaction_tween_factory,
                                    default_commit_veto)
 import pytest
 
+
 def test_handler_exception():
     def handler(request, mount):
         raise NotImplementedError
@@ -16,6 +17,7 @@ def test_handler_exception():
     assert txn.aborted
     assert not txn.committed
 
+
 def test_handler_retryable_exception():
     from transaction.interfaces import TransientError
 
@@ -24,7 +26,8 @@ def test_handler_retryable_exception():
 
     count = []
     response = DummyResponse()
-    app = DummyApp(transaction_attempts='3')
+    app = DummyApp()
+    app.settings.transaction.attempts = 3
 
     def handler(request, mount, count=count):
         count.append(True)
@@ -47,9 +50,12 @@ def test_handler_retryable_exception():
 
 def test_handler_retryable_exception_defaults_to_1():
     from transaction.interfaces import TransientError
+
     class Conflict(TransientError):
         pass
+
     count = []
+
     def handler(request, mount, count=count):
         raise Conflict
 
@@ -58,6 +64,7 @@ def test_handler_retryable_exception_defaults_to_1():
 
     with pytest.raises(Conflict):
         publish(DummyRequest(), DummyMount())
+
 
 def test_handler_isdoomed():
     txn = DummyTransaction(doomed=True)
@@ -90,6 +97,7 @@ def test_handler_notes():
 def test_500_without_commit_veto():
     response = DummyResponse()
     response.status = '500 Bad Request'
+
     def handler(request, mount):
         return response
 
@@ -104,7 +112,7 @@ def test_500_without_commit_veto():
 
 def test_500_with_default_commit_veto():
     app = DummyApp()
-    app.transaction_commit_veto = default_commit_veto
+    app.settings.transaction.commit_veto = default_commit_veto
 
     response = DummyResponse()
     response.status = '500 Bad Request'
@@ -124,11 +132,12 @@ def test_500_with_default_commit_veto():
 def test_null_commit_veto():
     response = DummyResponse()
     response.status = '500 Bad Request'
+
     def handler(request, mount):
         return response
 
     app = DummyApp()
-    app.transaction_commit_veto = None
+    app.settings.transaction.commit_veto = None
 
     txn = DummyTransaction()
     publish = transaction_tween_factory(app, handler, txn)
@@ -146,9 +155,10 @@ def test_commit_veto_true():
     def veto_true(request, response):
         return True
 
-    app.transaction_commit_veto = veto_true
+    app.settings.transaction.commit_veto = veto_true
 
     response = DummyResponse()
+
     def handler(request, mount):
         return response
 
@@ -164,11 +174,14 @@ def test_commit_veto_true():
 
 def test_commit_veto_false():
     app = DummyApp()
+
     def veto_false(request, response):
         return False
-    app.transaction_commit_veto = veto_false
+
+    app.settings.transaction.commit_veto = veto_false
 
     response = DummyResponse()
+
     def handler(request, mount):
         return response
 
@@ -184,6 +197,7 @@ def test_commit_veto_false():
 
 def test_commitonly():
     response = DummyResponse()
+
     def handler(request, mount):
         return response
 
@@ -197,10 +211,20 @@ def test_commitonly():
     assert txn.committed
 
 
+class DummySettingsSectionContainer(object):
+    def __init__(self):
+        self.transaction = DummyTransactionSettingSection()
+
+
+class DummyTransactionSettingSection(object):
+    def __init__(self):
+        self.attempts = 1
+        self.commit_veto = None
+
+
 class DummyApp(object):
-    def __init__(self, transaction_attempts=None):
-        if transaction_attempts:
-            self.transaction_attempts = transaction_attempts
+    def __init__(self):
+        self.settings = DummySettingsSectionContainer()
 
 
 class DummyMount(object):
@@ -240,22 +264,24 @@ class DummyTransaction(TransactionManager):
         return self.doomed
 
     def begin(self):
-        self.began+=1
+        self.began += 1
         self.active = True
         return self
 
     def commit(self):
-        self.committed+=1
+        self.committed += 1
 
     def abort(self):
         self.active = False
-        self.aborted+=1
+        self.aborted += 1
 
     def note(self, value):
         self._note = value
 
+
 class DummyRequest(object):
     full_path = '/'
+
     def __init__(self):
         self.environ = {}
         self.made_seekable = 0
@@ -263,17 +289,10 @@ class DummyRequest(object):
     def make_body_seekable(self):
         self.made_seekable += 1
 
+
 class DummyResponse(object):
     def __init__(self, status='200 OK', headers=None):
         self.status = status
         if headers is None:
             headers = {}
         self.headers = headers
-
-class DummyConfig(object):
-    def __init__(self):
-        self.registry = Dummy(settings={})
-        self.tweens = []
-
-    def add_tween(self, x, under=None, over=None):
-        self.tweens.append((x, under, over))

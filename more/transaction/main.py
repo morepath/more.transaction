@@ -7,6 +7,7 @@ app = morepath.App()
 
 # code taken and adjusted from pyramid_tm
 
+
 def default_commit_veto(request, response):
     """
     When used as a commit veto, the logic in this function will cause the
@@ -29,16 +30,24 @@ class AbortResponse(Exception):
     def __init__(self, response):
         self.response = response
 
+
+@app.setting_section(section='transaction')
+def get_transaction_settings():
+    return {
+        'attempts': 1,
+        'commit_veto': default_commit_veto
+        }
+
+
 @app.tween_factory()
 def transaction_tween_factory(app, handler, transaction=transaction):
-    # XXX need proper simple config system in morepath
-    attempts = int(getattr(app, 'transaction_attempts', 1))
-    commit_veto = getattr(app, 'transaction_commit_veto', None)
+    attempts = app.settings.transaction.attempts
+    commit_veto = app.settings.transaction.commit_veto
 
     def transaction_tween(request, mount):
         manager = transaction.manager
         number = attempts
-        userid = None # XXX get from identity on request
+        userid = None  # XXX get from identity on request
 
         while number:
             number -= 1
@@ -63,7 +72,7 @@ def transaction_tween_factory(app, handler, transaction=transaction):
                 manager.commit()
                 return response
             except AbortResponse:
-                e = sys.exc_info()[1] # py2.5-py3 compat
+                e = sys.exc_info()[1]  # py2.5-py3 compat
                 manager.abort()
                 return e.response
             except:
@@ -74,6 +83,6 @@ def transaction_tween_factory(app, handler, transaction=transaction):
                     if (number <= 0) or (not retryable):
                         reraise(*exc_info)
                 finally:
-                    del exc_info # avoid leak
+                    del exc_info  # avoid leak
 
     return transaction_tween
