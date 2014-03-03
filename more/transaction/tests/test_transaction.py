@@ -5,13 +5,13 @@ import pytest
 
 
 def test_handler_exception():
-    def handler(request, mount):
+    def handler(request):
         raise NotImplementedError
     txn = DummyTransaction()
     publish = transaction_tween_factory(DummyApp(), handler, txn)
 
     with pytest.raises(NotImplementedError):
-        publish(DummyRequest(), DummyMount())
+        publish(DummyRequest())
 
     assert txn.began
     assert txn.aborted
@@ -29,7 +29,7 @@ def test_handler_retryable_exception():
     app = DummyApp()
     app.settings.transaction.attempts = 3
 
-    def handler(request, mount, count=count):
+    def handler(request, count=count):
         count.append(True)
         if len(count) == 3:
             return response
@@ -39,7 +39,7 @@ def test_handler_retryable_exception():
 
     publish = transaction_tween_factory(app, handler, txn)
 
-    result = publish(DummyRequest(), DummyMount())
+    result = publish(DummyRequest())
 
     assert txn.began
     assert txn.committed == 1
@@ -56,25 +56,25 @@ def test_handler_retryable_exception_defaults_to_1():
 
     count = []
 
-    def handler(request, mount, count=count):
+    def handler(request, count=count):
         raise Conflict
 
     publish = transaction_tween_factory(DummyApp(),
                                         handler, DummyTransaction())
 
     with pytest.raises(Conflict):
-        publish(DummyRequest(), DummyMount())
+        publish(DummyRequest())
 
 
 def test_handler_isdoomed():
     txn = DummyTransaction(doomed=True)
 
-    def handler(request, mount):
+    def handler(request):
         return
 
     publish = transaction_tween_factory(DummyApp(), handler, txn)
 
-    publish(DummyRequest(), DummyMount())
+    publish(DummyRequest())
 
     assert txn.began
     assert txn.aborted
@@ -84,12 +84,12 @@ def test_handler_isdoomed():
 def test_handler_notes():
     txn = DummyTransaction()
 
-    def handler(request, mount):
+    def handler(request):
         return DummyResponse()
 
     publish = transaction_tween_factory(DummyApp(), handler, txn)
 
-    publish(DummyRequest(), DummyMount())
+    publish(DummyRequest())
     assert txn._note == '/'
     assert txn.username is None
 
@@ -98,12 +98,12 @@ def test_500_without_commit_veto():
     response = DummyResponse()
     response.status = '500 Bad Request'
 
-    def handler(request, mount):
+    def handler(request):
         return response
 
     txn = DummyTransaction()
     publish = transaction_tween_factory(DummyApp(), handler, txn)
-    result = publish(DummyRequest(), DummyMount())
+    result = publish(DummyRequest())
     assert result is response
     assert txn.began
     assert not txn.aborted
@@ -117,12 +117,12 @@ def test_500_with_default_commit_veto():
     response = DummyResponse()
     response.status = '500 Bad Request'
 
-    def handler(request, mount):
+    def handler(request):
         return response
 
     txn = DummyTransaction()
     publish = transaction_tween_factory(app, handler, txn)
-    result = publish(DummyRequest(), DummyMount())
+    result = publish(DummyRequest())
     assert result is response
     assert txn.began
     assert txn.aborted
@@ -133,7 +133,7 @@ def test_null_commit_veto():
     response = DummyResponse()
     response.status = '500 Bad Request'
 
-    def handler(request, mount):
+    def handler(request):
         return response
 
     app = DummyApp()
@@ -141,7 +141,7 @@ def test_null_commit_veto():
 
     txn = DummyTransaction()
     publish = transaction_tween_factory(app, handler, txn)
-    result = publish(DummyRequest(), DummyMount())
+    result = publish(DummyRequest())
 
     assert result is response
     assert txn.began
@@ -159,12 +159,12 @@ def test_commit_veto_true():
 
     response = DummyResponse()
 
-    def handler(request, mount):
+    def handler(request):
         return response
 
     txn = DummyTransaction()
     publish = transaction_tween_factory(app, handler, txn)
-    result = publish(DummyRequest(), DummyMount())
+    result = publish(DummyRequest())
 
     assert result is response
     assert txn.began
@@ -182,12 +182,12 @@ def test_commit_veto_false():
 
     response = DummyResponse()
 
-    def handler(request, mount):
+    def handler(request):
         return response
 
     txn = DummyTransaction()
     publish = transaction_tween_factory(app, handler, txn)
-    result = publish(DummyRequest(), DummyMount())
+    result = publish(DummyRequest())
 
     assert result is response
     assert txn.began
@@ -198,12 +198,12 @@ def test_commit_veto_false():
 def test_commitonly():
     response = DummyResponse()
 
-    def handler(request, mount):
+    def handler(request):
         return response
 
     txn = DummyTransaction()
     publish = transaction_tween_factory(DummyApp(), handler, txn)
-    result = publish(DummyRequest(), DummyMount())
+    result = publish(DummyRequest())
 
     assert result is response
     assert txn.began
@@ -225,10 +225,6 @@ class DummyTransactionSettingSection(object):
 class DummyApp(object):
     def __init__(self):
         self.settings = DummySettingsSectionContainer()
-
-
-class DummyMount(object):
-    pass
 
 
 class DummyTransaction(TransactionManager):

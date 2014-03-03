@@ -44,7 +44,7 @@ def transaction_tween_factory(app, handler, transaction=transaction):
     attempts = app.settings.transaction.attempts
     commit_veto = app.settings.transaction.commit_veto
 
-    def transaction_tween(request, mount):
+    def transaction_tween(request):
         manager = transaction.manager
         number = attempts
         userid = None  # XXX get from identity on request
@@ -62,7 +62,7 @@ def transaction_tween_factory(app, handler, transaction=transaction):
                 if userid:
                     t.setUser(userid, '')
                 t.note(request.full_path)
-                response = handler(request, mount)
+                response = handler(request)
                 if manager.isDoomed():
                     raise AbortResponse(response)
                 if commit_veto is not None:
