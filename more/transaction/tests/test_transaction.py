@@ -39,12 +39,14 @@ def test_handler_retryable_exception():
 
     publish = transaction_tween_factory(app, handler, txn)
 
-    result = publish(DummyRequest())
+    request = DummyRequest()
+
+    result = publish(request)
 
     assert txn.began
     assert txn.committed == 1
     assert txn.aborted == 2
-    #assert request.made_seekable == 3
+    assert request.made_seekable == 3
     assert result is response
 
 
@@ -276,7 +278,7 @@ class DummyTransaction(TransactionManager):
 
 
 class DummyRequest(object):
-    full_path = '/'
+    path = '/'
 
     def __init__(self):
         self.environ = {}

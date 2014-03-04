@@ -53,15 +53,14 @@ def transaction_tween_factory(app, handler, transaction=transaction):
             number -= 1
             try:
                 manager.begin()
-                # XXX what is this about?
                 # make_body_seekable will copy wsgi.input if necessary,
                 # otherwise it will rewind the copy to position zero
-                #if attempts != 1:
-                #    request.make_body_seekable()
+                if attempts != 1:
+                    request.make_body_seekable()
                 t = manager.get()
                 if userid:
                     t.setUser(userid, '')
-                t.note(request.full_path)
+                t.note(request.path)
                 response = handler(request)
                 if manager.isDoomed():
                     raise AbortResponse(response)
