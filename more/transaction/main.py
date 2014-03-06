@@ -39,7 +39,7 @@ def get_transaction_settings():
         }
 
 
-@app.tween_factory()
+@app.tween_factory(over=morepath.EXCVIEW)
 def transaction_tween_factory(app, handler, transaction=transaction):
     attempts = app.settings.transaction.attempts
     commit_veto = app.settings.transaction.commit_veto
