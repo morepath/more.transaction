@@ -7,7 +7,7 @@ long_description = (
     open('CHANGES.txt').read())
 
 setup(name='more.transaction',
-      version = '0.1dev',
+      version='0.1',
       description="transaction integration for Morepath",
       long_description=long_description,
       author="Martijn Faassen",
