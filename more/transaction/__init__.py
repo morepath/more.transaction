@@ -1,2 +1,2 @@
 # flake8: noqa
-from .main import app as transaction_app, default_commit_veto
+from .main import transaction_app, default_commit_veto

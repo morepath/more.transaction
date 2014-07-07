@@ -3,10 +3,10 @@ import morepath
 import transaction
 from .compat import reraise
 
-app = morepath.App()
+class transaction_app(morepath.App):
+    pass
 
 # code taken and adjusted from pyramid_tm
-
 
 def default_commit_veto(request, response):
     """
@@ -31,7 +31,7 @@ class AbortResponse(Exception):
         self.response = response
 
 
-@app.setting_section(section='transaction')
+@transaction_app.setting_section(section='transaction')
 def get_transaction_settings():
     return {
         'attempts': 1,
@@ -39,7 +39,7 @@ def get_transaction_settings():
         }
 
 
-@app.tween_factory(over=morepath.EXCVIEW)
+@transaction_app.tween_factory(over=morepath.EXCVIEW)
 def transaction_tween_factory(app, handler, transaction=transaction):
     attempts = app.settings.transaction.attempts
     commit_veto = app.settings.transaction.commit_veto
