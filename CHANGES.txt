@@ -4,8 +4,8 @@ CHANGES
 0.2 (unreleased)
 ================
 
-- Nothing changed yet.
-
+- Adjustments to work with Morepath 0.4 and later. (long overdue release,
+  thanks Denis Krienbühl for helping me find out!)
 
 0.1 (2014-04-08)
 ================
