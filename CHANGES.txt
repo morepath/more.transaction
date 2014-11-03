@@ -4,8 +4,7 @@ CHANGES
 0.2 (unreleased)
 ================
 
-- Nothing changed yet.
-
+- Compatibility fixes for Morepath 0.7.
 
 0.1 (2014-04-08)
 ================
