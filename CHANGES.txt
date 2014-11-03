@@ -1,10 +1,16 @@
 CHANGES
 *******
 
-0.2 (unreleased)
+0.3 (unreleased)
 ================
 
 - Compatibility fixes for Morepath 0.7.
+
+0.2 (2014-11-01)
+================
+
+- Adjustments to work with Morepath 0.4 and later. (long overdue release,
+  thanks Denis Krienbühl for helping me find out!)
 
 0.1 (2014-04-08)
 ================
