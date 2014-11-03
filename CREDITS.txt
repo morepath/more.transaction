@@ -3,4 +3,6 @@ CREDITS
 
 * Martijn Faassen (creator and main developer)
 
+* Denis Krienbühl (bug reports)
+
 * Special thanks to CONTACT software.
