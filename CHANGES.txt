@@ -4,6 +4,10 @@ CHANGES
 0.4 (unreleased)
 ================
 
+- Rename ``transaction_app`` to ``TransactionApp`` to be consistent
+  with modern class naming in Morepath. Still provide
+  ``transaction_app`` for backwards compatibility.
+
 - Modify ``setup.py`` to use ``io.open`` instead of ``open`` to
   include the README and the CHANGELOG and hardcode UTF-8 so it works
   on all versions of Python with all default encodings.

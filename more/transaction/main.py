@@ -3,8 +3,13 @@ import morepath
 import transaction
 from .compat import reraise
 
-class transaction_app(morepath.App):
+class TransactionApp(morepath.App):
     pass
+
+
+# older style naming left for backwards compability
+transaction_app = TransactionApp
+
 
 # code taken and adjusted from pyramid_tm
 
