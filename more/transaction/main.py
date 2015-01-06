@@ -7,10 +7,6 @@ class TransactionApp(morepath.App):
     pass
 
 
-# older style naming left for backwards compability
-transaction_app = TransactionApp
-
-
 # code taken and adjusted from pyramid_tm
 
 def default_commit_veto(request, response):
@@ -36,7 +32,7 @@ class AbortResponse(Exception):
         self.response = response
 
 
-@transaction_app.setting_section(section='transaction')
+@TransactionApp.setting_section(section='transaction')
 def get_transaction_settings():
     return {
         'attempts': 1,
@@ -44,7 +40,7 @@ def get_transaction_settings():
         }
 
 
-@transaction_app.tween_factory(over=morepath.EXCVIEW)
+@TransactionApp.tween_factory(over=morepath.EXCVIEW)
 def transaction_tween_factory(app, handler, transaction=transaction):
     attempts = app.registry.settings.transaction.attempts
     commit_veto = app.registry.settings.transaction.commit_veto
