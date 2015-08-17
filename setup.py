@@ -25,7 +25,8 @@ setup(name='more.transaction',
         'transaction',
         ],
       extras_require = dict(
-        test=['pytest >= 2.6.0',
+        test=['coverage',
+              'pytest >= 2.6.0',
               'pytest-cov'],
         ),
       )
