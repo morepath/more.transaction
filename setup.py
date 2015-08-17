@@ -1,4 +1,4 @@
-import os, io
+import io
 from setuptools import setup, find_packages
 
 long_description = (
@@ -20,13 +20,14 @@ setup(name='more.transaction',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-        'setuptools',
-        'morepath >= 0.7',
-        'transaction',
-        ],
-      extras_require = dict(
-        test=['coverage',
+          'setuptools',
+          'morepath >= 0.7',
+          'transaction',
+      ],
+      extras_require=dict(
+          test=[
+              'coverage',
               'pytest >= 2.6.0',
-              'pytest-cov'],
-        ),
-      )
+              'pytest-cov'
+          ],
+      ))
