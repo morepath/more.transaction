@@ -1,7 +1,10 @@
 import sys
 import morepath
 import transaction
+
 from .compat import reraise
+from morepath.traject import parse_path
+
 
 class TransactionApp(morepath.App):
     pass
@@ -37,7 +40,7 @@ def get_transaction_settings():
     return {
         'attempts': 1,
         'commit_veto': default_commit_veto
-        }
+    }
 
 
 @TransactionApp.tween_factory(over=morepath.EXCVIEW)
@@ -58,6 +61,7 @@ def transaction_tween_factory(app, handler, transaction=transaction):
                 # otherwise it will rewind the copy to position zero
                 if attempts != 1:
                     request.make_body_seekable()
+                    request.unconsumed = parse_path(request.path_info)
                 t = manager.get()
                 if userid:
                     t.setUser(userid, '')

@@ -4,8 +4,13 @@ CHANGES
 0.5 (unreleased)
 ================
 
-- Nothing changed yet.
+- Fixes transaction retries not working for paths with more than one variable.
+  
+  This bug had no effect on applications using the default more.transaction
+  settings. The bug only concerned applications using an ``attempts`` setting
+  greater than 1.
 
+  See https://github.com/morepath/more.transaction/issues/3
 
 0.4 (2015-01-06)
 ================

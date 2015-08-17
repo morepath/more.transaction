@@ -1,12 +1,56 @@
 from transaction import TransactionManager
+from transaction.interfaces import TransientError
+from morepath import setup
+from more.transaction import TransactionApp
 from more.transaction.main import (transaction_tween_factory,
                                    default_commit_veto)
+from webtest import TestApp as Client
 import pytest
 
 
+def test_multiple_path_variables():
+
+    config = setup()
+
+    class TestApp(TransactionApp):
+        testing_config = config
+        attempts = 0
+
+    @TestApp.path('/{type}/{id}')
+    class Document(object):
+        def __init__(self, type, id):
+            self.type = type
+            self.id = id
+
+    @TestApp.view(model=Document)
+    def view_document(self, request):
+        TestApp.attempts += 1
+
+        # on the first attempt raise a conflict error
+        if TestApp.attempts == 1:
+            raise Conflict
+
+        return 'ok'
+
+    @TestApp.setting(section='transaction', name='attempts')
+    def get_retry_attempts():
+        return 2
+
+    import more.transaction
+    config.scan(more.transaction)
+    config.commit()
+
+    client = Client(TestApp())
+    response = client.get('/document/1')
+    assert response.text == 'ok'
+    assert TestApp.attempts == 2
+
+
 def test_handler_exception():
+
     def handler(request):
         raise NotImplementedError
+
     txn = DummyTransaction()
     publish = transaction_tween_factory(DummyApp(), handler, txn)
 
@@ -51,11 +95,6 @@ def test_handler_retryable_exception():
 
 
 def test_handler_retryable_exception_defaults_to_1():
-    from transaction.interfaces import TransientError
-
-    class Conflict(TransientError):
-        pass
-
     count = []
 
     def handler(request, count=count):
@@ -292,6 +331,10 @@ class DummyRequest(object):
     def make_body_seekable(self):
         self.made_seekable += 1
 
+    @property
+    def path_info(self):
+        return self.path
+
 
 class DummyResponse(object):
     def __init__(self, status='200 OK', headers=None):
@@ -299,3 +342,7 @@ class DummyResponse(object):
         if headers is None:
             headers = {}
         self.headers = headers
+
+
+class Conflict(TransientError):
+        pass
