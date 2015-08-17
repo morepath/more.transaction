@@ -8,4 +8,6 @@ doc/build
 .coverage
 htmlcov
 .tox
-
+__pycache__
+*.egg-info
+*.pyc
