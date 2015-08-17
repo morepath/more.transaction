@@ -1,7 +1,7 @@
 CHANGES
 *******
 
-0.5 (unreleased)
+0.5 (2015-08-17)
 ================
 
 - Fixes transaction retries not working for paths with more than one variable.
