@@ -4,8 +4,7 @@ CHANGES
 0.6 (unreleased)
 ================
 
-- Nothing changed yet.
-
+- Adds compatibility with Morepath 0.13.
 
 0.5 (2015-08-17)
 ================

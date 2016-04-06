@@ -21,7 +21,7 @@ setup(name='more.transaction',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'morepath >= 0.7',
+          'morepath >= 0.13',
           'transaction',
       ],
       extras_require=dict(

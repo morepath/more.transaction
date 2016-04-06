@@ -1,6 +1,7 @@
+import morepath
+
 from transaction import TransactionManager
 from transaction.interfaces import TransientError
-from morepath import setup
 from more.transaction import TransactionApp
 from more.transaction.main import (transaction_tween_factory,
                                    default_commit_veto)
@@ -10,10 +11,7 @@ import pytest
 
 def test_multiple_path_variables():
 
-    config = setup()
-
     class TestApp(TransactionApp):
-        testing_config = config
         attempts = 0
 
     @TestApp.path('/{type}/{id}')
@@ -37,8 +35,8 @@ def test_multiple_path_variables():
         return 2
 
     import more.transaction
-    config.scan(more.transaction)
-    config.commit()
+    morepath.scan(more.transaction)
+    morepath.commit(TestApp)
 
     client = Client(TestApp())
     response = client.get('/document/1')
@@ -71,7 +69,7 @@ def test_handler_retryable_exception():
     count = []
     response = DummyResponse()
     app = DummyApp()
-    app.registry.settings.transaction.attempts = 3
+    app.settings.transaction.attempts = 3
 
     def handler(request, count=count):
         count.append(True)
@@ -153,7 +151,7 @@ def test_500_without_commit_veto():
 
 def test_500_with_default_commit_veto():
     app = DummyApp()
-    app.registry.settings.transaction.commit_veto = default_commit_veto
+    app.settings.transaction.commit_veto = default_commit_veto
 
     response = DummyResponse()
     response.status = '500 Bad Request'
@@ -178,7 +176,7 @@ def test_null_commit_veto():
         return response
 
     app = DummyApp()
-    app.registry.settings.transaction.commit_veto = None
+    app.settings.transaction.commit_veto = None
 
     txn = DummyTransaction()
     publish = transaction_tween_factory(app, handler, txn)
@@ -196,7 +194,7 @@ def test_commit_veto_true():
     def veto_true(request, response):
         return True
 
-    app.registry.settings.transaction.commit_veto = veto_true
+    app.settings.transaction.commit_veto = veto_true
 
     response = DummyResponse()
 
@@ -219,7 +217,7 @@ def test_commit_veto_false():
     def veto_false(request, response):
         return False
 
-    app.registry.settings.transaction.commit_veto = veto_false
+    app.settings.transaction.commit_veto = veto_false
 
     response = DummyResponse()
 
@@ -263,14 +261,9 @@ class DummyTransactionSettingSection(object):
         self.commit_veto = None
 
 
-class DummyRegistry(object):
-    def __init__(self):
-        self.settings = DummySettingsSectionContainer()
-
-
 class DummyApp(object):
     def __init__(self):
-        self.registry = DummyRegistry()
+        self.settings = DummySettingsSectionContainer()
 
 
 class DummyTransaction(TransactionManager):
