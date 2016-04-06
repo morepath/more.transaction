@@ -7,7 +7,7 @@ long_description = '\n'.join((
 ))
 
 setup(name='more.transaction',
-      version='0.6.dev0',
+      version='0.6',
       description="transaction integration for Morepath",
       long_description=long_description,
       author="Martijn Faassen",
