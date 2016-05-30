@@ -75,8 +75,7 @@ def transaction_tween_factory(app, handler, transaction=transaction):
                         raise AbortResponse(response)
                 manager.commit()
                 return response
-            except AbortResponse:
-                e = sys.exc_info()[1]  # py2.5-py3 compat
+            except AbortResponse as e:
                 manager.abort()
                 return e.response
             except:
