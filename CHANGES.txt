@@ -4,7 +4,7 @@ CHANGES
 0.7 (unreleased)
 ================
 
-- Nothing changed yet.
+- Remove py2.5 syntax.
 
 
 0.6 (2016-04-06)
@@ -16,7 +16,7 @@ CHANGES
 ================
 
 - Fixes transaction retries not working for paths with more than one variable.
-  
+
   This bug had no effect on applications using the default more.transaction
   settings. The bug only concerned applications using an ``attempts`` setting
   greater than 1.
