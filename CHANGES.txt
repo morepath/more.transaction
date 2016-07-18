@@ -14,6 +14,11 @@ CHANGES
   mounted applications. This is fixed in Morepath's new
   ``request.reset`` method, which we now use.
 
+- Replaced custom exception re-raise machinery with a ``raise``
+  statement with no arguments.  That was legacy code from
+  ``pyramid_tm`` when they were using a context manager instead of a
+  ``try...except`` statement.
+
 - Remove Python 2.5 syntax.
 
 - We had inherited a rather complicated ``reraise`` implementation
