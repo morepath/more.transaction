@@ -19,13 +19,10 @@ CHANGES
   ``pyramid_tm`` when they were using a context manager instead of a
   ``try...except`` statement.
 
+  See https://github.com/morepath/more.transaction/issues/7
+
 - Remove Python 2.5 syntax.
 
-- We had inherited a rather complicated ``reraise`` implementation
-  from ``pyramid_tm``. It appears to be in ``pyramid_tm`` for historical
-  reasons only, so we replaced it with a much simpler bare ``raise``.
-
-  https://github.com/morepath/more.transaction/issues/7
 
 0.6 (2016-04-06)
 ================
