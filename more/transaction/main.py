@@ -2,9 +2,6 @@ import sys
 import morepath
 import transaction
 
-from .compat import reraise
-from morepath.traject import parse_path
-
 
 class TransactionApp(morepath.App):
     pass
@@ -78,13 +75,10 @@ def transaction_tween_factory(app, handler, transaction=transaction):
                 manager.abort()
                 return e.response
             except:
-                exc_info = sys.exc_info()
-                try:
-                    retryable = manager._retryable(*exc_info[:-1])
-                    manager.abort()
-                    if (number <= 0) or (not retryable):
-                        reraise(*exc_info)
-                finally:
-                    del exc_info  # avoid leak
+                ex_type, ex_value = sys.exc_info()[:2]
+                retryable = manager._retryable(ex_type, ex_value)
+                manager.abort()
+                if (number <= 0) or (not retryable):
+                    raise
 
     return transaction_tween
