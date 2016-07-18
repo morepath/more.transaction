@@ -44,6 +44,49 @@ def test_multiple_path_variables():
     assert TestApp.attempts == 2
 
 
+def test_unconsumed_path_reset():
+
+    class TestApp(TransactionApp):
+        attempts = 0
+
+    @TestApp.path('/foo/bar')
+    class Foo(object):
+        pass
+
+    @TestApp.view(model=Foo)
+    def view_foo(self, request):
+        TestApp.attempts += 1
+
+        # on the first attempt raise a conflict error
+        if TestApp.attempts == 1:
+            raise Conflict
+
+        return 'ok'
+
+    # if the unconsumed path is reset wrongly, it'll accidentally pick
+    # up this model instead of Foo
+    @TestApp.path('/bar/foo')
+    class Bar(object):
+        pass
+
+    @TestApp.view(model=Bar)
+    def view_bar(self, request):
+        return 'error'
+
+    @TestApp.setting(section='transaction', name='attempts')
+    def get_retry_attempts():
+        return 2
+
+    import more.transaction
+    morepath.scan(more.transaction)
+    morepath.commit(TestApp)
+
+    client = Client(TestApp())
+    response = client.get('/foo/bar')
+    assert response.text == 'ok'
+    assert TestApp.attempts == 2
+
+
 def test_handler_exception():
 
     def handler(request):
