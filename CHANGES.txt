@@ -4,8 +4,17 @@ CHANGES
 0.7 (unreleased)
 ================
 
-- Remove py2.5 syntax.
+- Use a new ``request.reset`` API introduced by Morepath 0.15 to reset
+  the request so that a transaction can be properly
+  retried. Previously ``more.transaction`` was using internal Morepath
+  APIs to reset the request, which failed after a change in Morepath
+  0.15.
 
+- Discovered a bug: request resetting wasn't working properly with
+  mounted applications. This is fixed in Morepath's new
+  ``request.reset`` method, which we now use.
+
+- Remove Python 2.5 syntax.
 
 0.6 (2016-04-06)
 ================

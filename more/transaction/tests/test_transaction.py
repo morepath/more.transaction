@@ -44,7 +44,7 @@ def test_multiple_path_variables():
     assert TestApp.attempts == 2
 
 
-def test_unconsumed_path_reset():
+def test_reset_unconsumed_path():
 
     class TestApp(TransactionApp):
         attempts = 0
@@ -85,6 +85,45 @@ def test_unconsumed_path_reset():
     response = client.get('/foo/bar')
     assert response.text == 'ok'
     assert TestApp.attempts == 2
+
+
+def test_reset_app():
+    class RootApp(TransactionApp):
+        attempts = 0
+
+    class TestApp(morepath.App):
+        pass
+
+    @RootApp.mount(app=TestApp, path='/mount')
+    def mount_testapp():
+        return TestApp()
+
+    @TestApp.path('/sub')
+    class Foo(object):
+        pass
+
+    @TestApp.view(model=Foo)
+    def view_foo(self, request):
+        RootApp.attempts += 1
+
+        # on the first attempt raise a conflict error
+        if RootApp.attempts == 1:
+            raise Conflict
+
+        return 'ok'
+
+    @RootApp.setting(section='transaction', name='attempts')
+    def get_retry_attempts():
+        return 2
+
+    import more.transaction
+    morepath.scan(more.transaction)
+    morepath.commit(RootApp)
+
+    client = Client(RootApp())
+    response = client.get('/mount/sub')
+    assert response.text == 'ok'
+    assert RootApp.attempts == 2
 
 
 def test_handler_exception():
@@ -366,6 +405,9 @@ class DummyRequest(object):
 
     def make_body_seekable(self):
         self.made_seekable += 1
+
+    def reset(self):
+        self.make_body_seekable()
 
     @property
     def path_info(self):

@@ -60,8 +60,7 @@ def transaction_tween_factory(app, handler, transaction=transaction):
                 # make_body_seekable will copy wsgi.input if necessary,
                 # otherwise it will rewind the copy to position zero
                 if attempts != 1:
-                    request.make_body_seekable()
-                    request.unconsumed = parse_path(request.path_info)
+                    request.reset()
                 t = manager.get()
                 if userid:
                     t.setUser(userid, '')
