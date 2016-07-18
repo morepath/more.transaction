@@ -21,6 +21,8 @@ CHANGES
 
   See https://github.com/morepath/more.transaction/issues/7
 
+- Update test suite to take advantage of Morepath 0.15.
+
 - Remove Python 2.5 syntax.
 
 

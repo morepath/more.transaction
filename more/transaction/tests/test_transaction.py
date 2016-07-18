@@ -34,10 +34,6 @@ def test_multiple_path_variables():
     def get_retry_attempts():
         return 2
 
-    import more.transaction
-    morepath.scan(more.transaction)
-    morepath.commit(TestApp)
-
     client = Client(TestApp())
     response = client.get('/document/1')
     assert response.text == 'ok'
@@ -77,10 +73,6 @@ def test_reset_unconsumed_path():
     def get_retry_attempts():
         return 2
 
-    import more.transaction
-    morepath.scan(more.transaction)
-    morepath.commit(TestApp)
-
     client = Client(TestApp())
     response = client.get('/foo/bar')
     assert response.text == 'ok'
@@ -115,10 +107,6 @@ def test_reset_app():
     @RootApp.setting(section='transaction', name='attempts')
     def get_retry_attempts():
         return 2
-
-    import more.transaction
-    morepath.scan(more.transaction)
-    morepath.commit(RootApp)
 
     client = Client(RootApp())
     response = client.get('/mount/sub')
