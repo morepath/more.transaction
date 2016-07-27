@@ -1,13 +1,26 @@
-bin
-parts
+# Byte-compiled / optimized
+__pycache__/
+*.py[co]
+
+# Distribution / packaging
+*.egg-info/
+build/
+dist/
+
+# Virtualenv
+env/
+
+# Buildout
+bin/
+develop-eggs/
+eggs/
+src/
+parts/
 .installed.cfg
-develop-eggs
-src
 .mr.developer.cfg
-doc/build
+
+# Unit test / coverage reports
+.cache/
 .coverage
 htmlcov
 .tox
-__pycache__
-*.egg-info
-*.pyc
