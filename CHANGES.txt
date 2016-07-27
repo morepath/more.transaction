@@ -4,8 +4,9 @@ CHANGES
 0.8 (unreleased)
 ================
 
-- Nothing changed yet.
+- Add Python 3.5 and make it the default test environment.
 
+- Clean up meta data.
 
 0.7 (2016-07-18)
 ================
@@ -30,7 +31,6 @@ CHANGES
 - Update test suite to take advantage of Morepath 0.15.
 
 - Remove Python 2.5 syntax.
-
 
 0.6 (2016-04-06)
 ================
