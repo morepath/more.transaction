@@ -203,6 +203,20 @@ def test_handler_notes():
     assert txn.username is None
 
 
+def test_identity():
+    txn = DummyTransaction()
+    request = DummyRequest()
+    request.identity = morepath.Identity('foo')
+
+    def handler(request):
+        return DummyResponse()
+
+    publish = transaction_tween_factory(DummyApp(), handler, txn)
+
+    publish(request)
+    assert txn.username == ':foo'
+
+
 def test_500_without_commit_veto():
     response = DummyResponse()
     response.status = '500 Bad Request'
@@ -363,7 +377,7 @@ class DummyTransaction(TransactionManager):
         return self
 
     def setUser(self, name, path='/'):
-        self.username = "%s %s" % (path, name)
+        self.username = "%s:%s" % (path, name)
 
     def isDoomed(self):
         return self.doomed
@@ -386,6 +400,7 @@ class DummyTransaction(TransactionManager):
 
 class DummyRequest(object):
     path = '/'
+    identity = morepath.NO_IDENTITY
 
     def __init__(self):
         self.environ = {}

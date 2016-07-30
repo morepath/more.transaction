@@ -8,6 +8,11 @@ CHANGES
 
 - Clean up meta data.
 
+- Fix `#6`_: ``userid`` not taken properly. 
+
+.. _#6: https://github.com/morepath/more.transaction/issues/6
+
+
 0.7 (2016-07-18)
 ================
 

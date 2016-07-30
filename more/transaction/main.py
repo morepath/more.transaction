@@ -48,7 +48,7 @@ def transaction_tween_factory(app, handler, transaction=transaction):
     def transaction_tween(request):
         manager = transaction.manager
         number = attempts
-        userid = None  # XXX get from identity on request
+        userid = request.identity.userid
 
         while number:
             number -= 1
@@ -59,7 +59,7 @@ def transaction_tween_factory(app, handler, transaction=transaction):
                 if attempts != 1:
                     request.reset()
                 t = manager.get()
-                if userid:
+                if userid is not None:
                     t.setUser(userid, '')
                 t.note(request.path)
                 response = handler(request)
