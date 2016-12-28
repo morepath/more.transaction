@@ -4,6 +4,9 @@ CHANGES
 0.8 (unreleased)
 ================
 
+- Fixes incompatibility with latest transaction release in combination with
+  Python 2.7. See https://github.com/morepath/more.transaction/issues/8
+
 - Add Python 3.5 and make it the default test environment.
 
 - Clean up meta data.
