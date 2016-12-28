@@ -1,7 +1,7 @@
 CHANGES
 *******
 
-0.8 (unreleased)
+0.8 (2016-12-28)
 ================
 
 - Fixes incompatibility with latest transaction release in combination with
