@@ -4,8 +4,18 @@ CHANGES
 0.9 (unreleased)
 ================
 
-- Nothing changed yet.
+- Fixes incompatibility with transaction 2.4.0.
 
+  In transaction 2.4.0 some internal APIs we use have changed. As a result,
+  we've hade to make a small change. As there's probably no need to keep
+  an old transaction release around we dropped support for transaction < 2.4.0.
+
+  If you have a good reason why we should support an old transaction release
+  with the latest more.transaction, let us know - it could be done, though
+  there should be tests verifying multiple transaction releases against
+  more.transaction.
+
+  See https://github.com/zopefoundation/transaction/pull/68
 
 0.8 (2016-12-28)
 ================
@@ -17,7 +27,7 @@ CHANGES
 
 - Clean up meta data.
 
-- Fix `#6`_: ``userid`` not taken properly. 
+- Fix `#6`_: ``userid`` not taken properly.
 
 .. _#6: https://github.com/morepath/more.transaction/issues/6
 

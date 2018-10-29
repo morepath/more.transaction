@@ -36,7 +36,7 @@ setup(
     install_requires=[
         'setuptools',
         'morepath >= 0.15',
-        'transaction',
+        'transaction >= 2.4.0',
     ],
     extras_require=dict(
         test=[

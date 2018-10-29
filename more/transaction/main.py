@@ -78,7 +78,7 @@ def transaction_tween_factory(app, handler, transaction=transaction):
                 return e.response
             except:
                 ex_type, ex_value = sys.exc_info()[:2]
-                retryable = manager._retryable(ex_type, ex_value)
+                retryable = manager.manager._retryable(ex_type, ex_value)
                 manager.abort()
                 if (number <= 0) or (not retryable):
                     raise
