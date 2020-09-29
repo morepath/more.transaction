@@ -426,4 +426,4 @@ class DummyResponse(object):
 
 
 class Conflict(TransientError):
-        pass
+    pass
