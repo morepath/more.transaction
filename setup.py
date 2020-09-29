@@ -42,6 +42,8 @@ setup(
             'coverage',
             'pytest >= 2.6.0',
             'pytest-cov',
-            'webtest'
+            'webtest',
+            'tox'
         ],
-    ))
+    )
+)
