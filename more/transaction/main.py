@@ -76,7 +76,7 @@ def transaction_tween_factory(app, handler, transaction=transaction):
             except AbortResponse as e:
                 manager.abort()
                 return e.response
-            except:
+            except Exception:
                 ex_type, ex_value = sys.exc_info()[:2]
                 retryable = manager.manager._retryable(ex_type, ex_value)
                 manager.abort()
