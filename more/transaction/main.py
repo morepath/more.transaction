@@ -9,6 +9,7 @@ class TransactionApp(morepath.App):
 
 # code taken and adjusted from pyramid_tm
 
+
 def default_commit_veto(request, response):
     """
     When used as a commit veto, the logic in this function will cause the
@@ -21,10 +22,10 @@ def default_commit_veto(request, response):
 
     Otherwise the transaction will be allowed to commit.
     """
-    xtm = response.headers.get('x-tm')
+    xtm = response.headers.get("x-tm")
     if xtm is not None:
-        return xtm != 'commit'
-    return response.status.startswith(('4', '5'))
+        return xtm != "commit"
+    return response.status.startswith(("4", "5"))
 
 
 class AbortResponse(Exception):
@@ -32,12 +33,9 @@ class AbortResponse(Exception):
         self.response = response
 
 
-@TransactionApp.setting_section(section='transaction')
+@TransactionApp.setting_section(section="transaction")
 def get_transaction_settings():
-    return {
-        'attempts': 1,
-        'commit_veto': default_commit_veto
-    }
+    return {"attempts": 1, "commit_veto": default_commit_veto}
 
 
 @TransactionApp.tween_factory(over=morepath.EXCVIEW)
@@ -60,7 +58,7 @@ def transaction_tween_factory(app, handler, transaction=transaction):
                     request.reset()
                 t = manager.get()
                 if userid is not None:
-                    t.setUser(userid, '')
+                    t.setUser(userid, "")
                 t.note(str(request.path))
                 response = handler(request)
                 if manager.isDoomed():
