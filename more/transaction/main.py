@@ -2,8 +2,6 @@ import sys
 import morepath
 import transaction
 
-from more.transaction.compat import text_type
-
 
 class TransactionApp(morepath.App):
     pass
@@ -63,7 +61,7 @@ def transaction_tween_factory(app, handler, transaction=transaction):
                 t = manager.get()
                 if userid is not None:
                     t.setUser(userid, '')
-                t.note(text_type(request.path))
+                t.note(str(request.path))
                 response = handler(request)
                 if manager.isDoomed():
                     raise AbortResponse(response)
