@@ -38,12 +38,8 @@ setup(
         'transaction >= 2.4.0',
     ],
     extras_require=dict(
-        test=[
-            'coverage',
-            'pytest >= 2.6.0',
-            'pytest-cov',
-            'webtest',
-            'tox'
-        ],
-    )
+        test=["pytest >= 2.9.0", "WebTest >= 2.0.14", "pytest-remove-stale-bytecode"],
+        pep8=["flake8", "black"],
+        coverage=["pytest-cov"],
+    ),
 )
