@@ -13,8 +13,8 @@ See https://github.com/morepath/morepath_sqlalchemy for a demo.
 Build Status
 ------------
 
-.. image:: https://travis-ci.org/morepath/more.transaction.svg?branch=master
-    :target: https://travis-ci.org/morepath/more.transaction
+.. image:: https://travis-ci.com/morepath/more.transaction.svg?branch=master
+    :target: https://travis-ci.com/morepath/more.transaction
 
 .. image:: https://coveralls.io/repos/morepath/more.transaction/badge.svg?branch=master
     :target: https://coveralls.io/r/morepath/more.transaction?branch=master
