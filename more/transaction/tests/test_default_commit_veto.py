@@ -60,7 +60,7 @@ def test_it_true_x_tm_anythingelse():
     assert callFUT(response)
 
 
-class DummyRequest(object):
+class DummyRequest:
     path_info = "/"
 
     def __init__(self):
@@ -71,7 +71,7 @@ class DummyRequest(object):
         self.made_seekable += 1
 
 
-class DummyResponse(object):
+class DummyResponse:
     def __init__(self, status="200 OK", headers=None):
         self.status = status
         if headers is None:

@@ -13,7 +13,7 @@ def test_multiple_path_variables():
         attempts = 0
 
     @TestApp.path("/{type}/{id}")
-    class Document(object):
+    class Document:
         def __init__(self, type, id):
             self.type = type
             self.id = id
@@ -43,7 +43,7 @@ def test_reset_unconsumed_path():
         attempts = 0
 
     @TestApp.path("/foo/bar")
-    class Foo(object):
+    class Foo:
         pass
 
     @TestApp.view(model=Foo)
@@ -59,7 +59,7 @@ def test_reset_unconsumed_path():
     # if the unconsumed path is reset wrongly, it'll accidentally pick
     # up this model instead of Foo
     @TestApp.path("/bar/foo")
-    class Bar(object):
+    class Bar:
         pass
 
     @TestApp.view(model=Bar)
@@ -88,7 +88,7 @@ def test_reset_app():
         return TestApp()
 
     @TestApp.path("/sub")
-    class Foo(object):
+    class Foo:
         pass
 
     @TestApp.view(model=Foo)
@@ -329,18 +329,18 @@ def test_commitonly():
     assert txn.committed
 
 
-class DummySettingsSectionContainer(object):
+class DummySettingsSectionContainer:
     def __init__(self):
         self.transaction = DummyTransactionSettingSection()
 
 
-class DummyTransactionSettingSection(object):
+class DummyTransactionSettingSection:
     def __init__(self):
         self.attempts = 1
         self.commit_veto = None
 
 
-class DummyApp(object):
+class DummyApp:
     def __init__(self):
         self.settings = DummySettingsSectionContainer()
 
@@ -372,7 +372,7 @@ class DummyTransaction(TransactionManager):
         return self
 
     def setUser(self, name, path="/"):
-        self.username = "%s:%s" % (path, name)
+        self.username = f"{path}:{name}"
 
     def isDoomed(self):
         return self.doomed
@@ -393,7 +393,7 @@ class DummyTransaction(TransactionManager):
         self._note = value
 
 
-class DummyRequest(object):
+class DummyRequest:
     path = "/"
     identity = morepath.NO_IDENTITY
 
@@ -412,7 +412,7 @@ class DummyRequest(object):
         return self.path
 
 
-class DummyResponse(object):
+class DummyResponse:
     def __init__(self, status="200 OK", headers=None):
         self.status = status
         if headers is None:

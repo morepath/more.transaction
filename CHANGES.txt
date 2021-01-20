@@ -19,6 +19,8 @@ CHANGES
 
 - Make Python 3.6 the minimal version
 
+- Use GitHub Actions for CI.
+
 0.8 (2016-12-28)
 ================
 
