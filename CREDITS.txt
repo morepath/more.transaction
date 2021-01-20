@@ -5,4 +5,6 @@ CREDITS
 
 * Denis Krienbühl (bug reports)
 
+* Jürgen Gmach (CI)
+
 * Special thanks to CONTACT software.

@@ -1,10 +1,9 @@
-import io
 from setuptools import setup, find_packages
 
 long_description = "\n".join(
     (
-        io.open("README.rst", encoding="utf-8").read(),
-        io.open("CHANGES.txt", encoding="utf-8").read(),
+        open("README.rst", encoding="utf-8").read(),
+        open("CHANGES.txt", encoding="utf-8").read(),
     )
 )
 
@@ -30,6 +29,7 @@ setup(
         "Topic :: Internet :: WWW/HTTP :: WSGI",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Development Status :: 5 - Production/Stable",
