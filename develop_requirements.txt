@@ -1,0 +1,8 @@
+# development
+-e '.[test,coverage,lint]'
+pre-commit
+tox >= 4
+radon
+
+# releaser
+zest.releaser[recommended]
