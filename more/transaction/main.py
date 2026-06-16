@@ -1,6 +1,15 @@
+from __future__ import annotations
+
 import sys
 import morepath
 import transaction
+
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from morepath.request import Request
+    from morepath.types import Tween
+    from webob import Response as BaseResponse
 
 
 class TransactionApp(morepath.App):
@@ -10,7 +19,7 @@ class TransactionApp(morepath.App):
 # code taken and adjusted from pyramid_tm
 
 
-def default_commit_veto(request, response):
+def default_commit_veto(request: object, response: BaseResponse) -> bool:
     """
     When used as a commit veto, the logic in this function will cause the
     transaction to be aborted if:
@@ -29,21 +38,23 @@ def default_commit_veto(request, response):
 
 
 class AbortResponse(Exception):
-    def __init__(self, response):
+    def __init__(self, response: BaseResponse) -> None:
         self.response = response
 
 
 @TransactionApp.setting_section(section="transaction")
-def get_transaction_settings():
+def get_transaction_settings() -> dict[str, Any]:
     return {"attempts": 1, "commit_veto": default_commit_veto}
 
 
 @TransactionApp.tween_factory(over=morepath.EXCVIEW)
-def transaction_tween_factory(app, handler, transaction=transaction):
+def transaction_tween_factory(
+    app: TransactionApp, handler: Tween, transaction: Any = transaction
+) -> Tween:
     attempts = app.settings.transaction.attempts
     commit_veto = app.settings.transaction.commit_veto
 
-    def transaction_tween(request):
+    def transaction_tween(request: Request) -> BaseResponse:
         manager = transaction.manager
         number = attempts
         userid = request.identity.userid
@@ -78,5 +89,6 @@ def transaction_tween_factory(app, handler, transaction=transaction):
                 manager.abort()
                 if (number <= 0) or (not retryable):
                     raise
+        raise AssertionError("unreachable")  # pragma: no cover
 
     return transaction_tween

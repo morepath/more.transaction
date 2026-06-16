@@ -1,3 +1,6 @@
+# sources
+-r corelibs.txt
+
 # development
 -e '.[test,coverage,lint]'
 pre-commit
