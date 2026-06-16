@@ -1,7 +1,18 @@
 CHANGES
 *******
 
-0.9 (unreleased)
+1.0 (unreleased)
+================
+
+- Make Python 3.10 the minimal version
+
+- Switch to a PEP-420 implicit namespace package
+
+- Add type hints
+
+- Use GitHub Actions for CI.
+
+0.9 (2018-10-29)
 ================
 
 - Fixes incompatibility with transaction 2.4.0.
@@ -16,12 +27,6 @@ CHANGES
   more.transaction.
 
   See https://github.com/zopefoundation/transaction/pull/68
-
-- Make Python 3.10 the minimal version
-
-- Switch to a PEP-420 implicit namespace package
-
-- Use GitHub Actions for CI.
 
 0.8 (2016-12-28)
 ================

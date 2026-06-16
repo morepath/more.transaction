@@ -1,0 +1,5 @@
+# Points to the master branches of Morepath, Reg and Dectate on Github
+git+https://github.com/morepath/reg.git@master#egg=reg
+git+https://github.com/morepath/dectate.git@master#egg=dectate
+git+https://github.com/morepath/importscan.git@master#egg=importscan
+git+https://github.com/morepath/morepath.git@master#egg=morepath

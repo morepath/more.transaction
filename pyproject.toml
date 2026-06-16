@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "more.transaction"
-version = "0.9.dev0"
+version = "1.0.dev0"
 dynamic = ["readme"]
 description = "transaction integration for Morepath"
 license = "BSD-3-Clause"
@@ -28,6 +28,7 @@ classifiers = [
 ]
 requires-python = ">= 3.10"
 dependencies = [
+    # TODO: Change this pin to >= 1
     "morepath >= 0.15",
     "transaction >= 2.4.0",
 ]
@@ -41,9 +42,14 @@ Changelog = "https://github.com/morepath/more.transaction/blob/master/CHANGES.tx
 test = ["pytest >= 8", "pytest-env", "WebTest >= 2.0.14"]
 coverage = ["pytest-cov"]
 lint = ["black", "flake8", "flake8-pyproject"]
+mypy = ["mypy", "pytest", "types-WebOb", "types-WebTest"]
+pyright = ["pyright", "pytest", "types-WebOb", "types-WebTest", "WebTest >= 2.0.14"]
 
 [tool.setuptools.packages]
 find = {}
+
+[tool.setuptools.package-data]
+"more.transaction" = ["py.typed"]
 
 [tool.setuptools.dynamic]
 readme = {file = ["README.rst", "CHANGES.txt"]}
@@ -66,6 +72,16 @@ show-source = true
 ignore = ["E203", "E731", "W503", "N801"]
 max-line-length = 88
 
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+# ignore missing imports for packages that have no stubs available
+module = ["transaction.*"]
+ignore_missing_imports = true
+
 [tool.tox]
 requires = ["tox>=4"]
 env_list = [
@@ -77,12 +93,14 @@ env_list = [
     "pypy3",
     "coverage",
     "pre-commit",
+    "mypy",
+    "pyright",
 ]
 skip_missing_interpreters = true
 
 [tool.tox.gh.python]
 "3.10" = ["py310"]
-"3.11" = ["py311"]
+"3.11" = ["py311", "mypy", "pyright"]
 "3.12" = ["py312"]
 "3.13" = ["py313"]
 "3.14" = ["py314", "pre-commit", "coverage"]
@@ -91,6 +109,7 @@ skip_missing_interpreters = true
 [tool.tox.env_run_base]
 package = "editable"
 extras = ["test"]
+deps = ["-r{tox_root}/requirements/corelibs.txt"]
 commands = [["pytest", "{posargs:more}"]]
 
 [tool.tox.env.coverage]
@@ -106,4 +125,26 @@ package = "skip"
 deps = ["pre-commit"]
 commands = [
     ["pre-commit", "run", "--all-files"],
+]
+
+[tool.tox.env.mypy]
+base_python = ["python3"]
+extras = ["mypy"]
+commands = [
+    ["mypy", "-p", "more.transaction", "--python-version", "3.10"],
+    ["mypy", "-p", "more.transaction", "--python-version", "3.11"],
+    ["mypy", "-p", "more.transaction", "--python-version", "3.12"],
+    ["mypy", "-p", "more.transaction", "--python-version", "3.13"],
+    ["mypy", "-p", "more.transaction", "--python-version", "3.14"],
+]
+
+[tool.tox.env.pyright]
+base_python = ["python3"]
+extras = ["pyright"]
+commands = [
+    ["pyright", "more/transaction", "--pythonversion", "3.10"],
+    ["pyright", "more/transaction", "--pythonversion", "3.11"],
+    ["pyright", "more/transaction", "--pythonversion", "3.12"],
+    ["pyright", "more/transaction", "--pythonversion", "3.13"],
+    ["pyright", "more/transaction", "--pythonversion", "3.14"],
 ]
