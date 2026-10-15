@@ -1,0 +1,6 @@
+# development
+-e '.[test,coverage,lint,mypy,pyright]'
+tox >= 4.21.1
+
+# releaser
+zest.releaser[recommended]
