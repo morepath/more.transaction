@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+abort() {
+    printf '%s\n' "$@" >&2
+    exit 1
+}
+
+tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/morepath-ruff.XXXXXX") ||
+    abort 'Ruff pre-commit check: could not create a temporary directory.'
+trap 'rm -rf "$tmpdir"' EXIT
+
+verbose=${RUFF_PRE_COMMIT_VERBOSE:-0}
+
+# NUL-separated paths can't be kept in a shell variable, so go through a file.
+# Writing to a file also makes a git failure visible.
+git diff --cached --name-only --diff-filter=ACMR -z -- '*.py' '*.pyi' \
+    >"$tmpdir/files" ||
+    abort 'Ruff pre-commit check: could not list the staged files.'
+mapfile -d '' -t python_files <"$tmpdir/files"
+(( ${#python_files[@]} )) || exit 0
+
+# Prefer the project's venv, then PATH.
+for candidate in .venv/bin/ruff .venv/Scripts/ruff.exe ruff ruff.exe; do
+    ruff_cmd=$(command -v "$candidate") && break
+done
+[[ -n $ruff_cmd ]] ||
+    abort 'Ruff not found in .venv or PATH.' \
+        "Install it with pip install -e '.[lint]'"
+
+# Show the bare name (ruff or ruff.exe) when it resolves to the same binary.
+ruff_display_cmd=$ruff_cmd
+if [[ $verbose != 1 ]]; then
+    for name in ruff ruff.exe; do
+        if command_path=$(command -v "$name") && [[ $command_path -ef $ruff_cmd ]]; then
+            ruff_display_cmd=$name
+            break
+        fi
+    done
+fi
+
+# report <label> <fix label> <ruff arguments> <files...>
+report() {
+    local label=$1 fixlabel=$2 arguments=$3
+    shift 3
+    printf '\n%s (%d):' "$label" "$#"
+    printf ' %q' "$@"
+    printf '\n%s: %s %s' "$fixlabel" "$ruff_display_cmd" "$arguments"
+    printf ' %q' "$@"
+    printf '\n'
+}
+
+format_files=()
+lint_files=()
+lint_output=()
+
+for path in "${python_files[@]}"; do
+    git show ":$path" >"$tmpdir/staged" ||
+        abort "Could not read the staged content of $path."
+
+    # Format the staged content. --force-exclude applies exclude settings to
+    # stdin input. A failure (syntax error, broken config) is an error, not a finding.
+    errors=$("$ruff_cmd" format --force-exclude --stdin-filename "$path" - \
+        <"$tmpdir/staged" 2>&1 >"$tmpdir/formatted") ||
+        abort "Ruff format failed on $path:" "$errors"
+
+    cmp -s "$tmpdir/staged" "$tmpdir/formatted" || format_files+=("$path")
+
+    # Lint the formatted content, so problems the formatter fixes anyway
+    # (e.g. trailing whitespace) are not reported twice.
+    output=$("$ruff_cmd" check --force-exclude --no-fix --stdin-filename "$path" \
+        - <"$tmpdir/formatted" 2>&1)
+    case $? in
+        0) ;;
+        1)
+            lint_files+=("$path")
+            lint_output+=("$output")
+            ;;
+        *) abort "Ruff check failed on $path:" "$output" ;;
+    esac
+done
+
+if (( ${#format_files[@]} == 0 && ${#lint_files[@]} == 0 )); then
+    exit 0
+fi
+
+printf '%s\n' 'Ruff checks failed - no files were changed.'
+if (( ${#format_files[@]} )); then
+    report 'Needs formatting' 'Fix with' 'format' "${format_files[@]}"
+fi
+if (( ${#lint_files[@]} )); then
+    report 'Lint errors' 'Try' 'check --fix' "${lint_files[@]}"
+    if [[ $verbose == 1 ]]; then
+        printf '\n%s\n' 'Ruff diagnostics for the staged content:'
+        printf '%s\n' "${lint_output[@]}"
+        printf '\n%s\n' \
+            'The hook checks the staged snapshot. If the working-tree file passes Ruff, stage the latest version and retry.'
+    fi
+fi
+printf '\n%s\n' 'Review and stage the fixes, then retry the commit.'
+exit 1
