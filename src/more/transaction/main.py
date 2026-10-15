@@ -1,15 +1,16 @@
 from __future__ import annotations
 
 import sys
+from typing import TYPE_CHECKING, Any
+
 import morepath
 import transaction
 
-from typing import TYPE_CHECKING, Any
-
 if TYPE_CHECKING:
+    from webob import Response as BaseResponse
+
     from morepath.request import Request
     from morepath.types import Tween
-    from webob import Response as BaseResponse
 
 
 class TransactionApp(morepath.App):
