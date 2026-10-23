@@ -366,10 +366,8 @@ class DummyTransaction(TransactionManager):
     def manager(self) -> DummyTransaction:
         return self
 
-    def _retryable(self, t: object, v: object) -> bool:
-        if self.active:
-            return self.retryable
-        return False
+    def isRetryableError(self, error: BaseException) -> bool:
+        return self.active and self.retryable
 
     def get(self) -> DummyTransaction:  # type: ignore[override]
         return self

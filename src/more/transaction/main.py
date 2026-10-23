@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 from typing import TYPE_CHECKING, Any
 
 import morepath
@@ -84,9 +83,8 @@ def transaction_tween_factory(
             except AbortResponse as e:
                 manager.abort()
                 return e.response
-            except Exception:
-                ex_type, ex_value = sys.exc_info()[:2]
-                retryable = manager.manager._retryable(ex_type, ex_value)
+            except Exception as e:
+                retryable = manager.get().isRetryableError(e)
                 manager.abort()
                 if (number <= 0) or (not retryable):
                     raise
