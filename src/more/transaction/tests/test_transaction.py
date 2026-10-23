@@ -133,7 +133,7 @@ def test_handler_exception() -> None:
 def test_handler_retryable_exception() -> None:
     from transaction.interfaces import TransientError
 
-    class Conflict(TransientError):  # type: ignore[misc]
+    class Conflict(TransientError):
         pass
 
     count: list[bool] = []
@@ -197,7 +197,7 @@ def test_handler_notes() -> None:
     publish: Any = transaction_tween_factory(DummyApp(), handler, txn)
 
     publish(DummyRequest())
-    assert txn._note == "/"
+    assert txn._note == "/"  # pyright: ignore[reportPrivateUsage]
     assert txn.username is None
 
 
@@ -350,7 +350,7 @@ else:
             self.settings = DummySettingsSectionContainer()
 
 
-class DummyTransaction(TransactionManager):  # type: ignore[misc]
+class DummyTransaction(TransactionManager):
     _resources: list[Any] = []
     username: str | None = None
 
@@ -366,12 +366,12 @@ class DummyTransaction(TransactionManager):  # type: ignore[misc]
     def manager(self) -> DummyTransaction:
         return self
 
-    def _retryable(self, t: object, v: object) -> bool:  # pyright: ignore
+    def _retryable(self, t: object, v: object) -> bool:
         if self.active:
             return self.retryable
         return False
 
-    def get(self) -> DummyTransaction:  # pyright: ignore
+    def get(self) -> DummyTransaction:  # type: ignore[override]
         return self
 
     def setUser(self, name: str, path: str = "/") -> None:
@@ -380,7 +380,7 @@ class DummyTransaction(TransactionManager):  # type: ignore[misc]
     def isDoomed(self) -> bool:
         return self.doomed
 
-    def begin(self) -> DummyTransaction:  # pyright: ignore
+    def begin(self) -> DummyTransaction:  # type: ignore[override]
         self.began += 1
         self.active = True
         return self
@@ -425,5 +425,5 @@ class DummyResponse:
         self.headers = headers
 
 
-class Conflict(TransientError):  # type: ignore[misc]
+class Conflict(TransientError):
     pass
